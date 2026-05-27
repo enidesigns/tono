@@ -296,9 +296,14 @@ function escHtml(str)  { return str.replace(/&/g, '&amp;').replace(/</g, '&lt;')
 
 // Safely convert any value the AI returns to a readable string.
 // Guards against nested objects showing up as [object Object].
+// Also renders pipe-separated copy (used for buttons, modals, toasts) as multi-line.
 function formatCopy(value) {
   if (value === null || value === undefined) return '';
-  if (typeof value === 'string') return value;
+  if (typeof value === 'string') {
+    // If the model used " | " as a separator, render each part on its own line
+    if (value.includes(' | ')) return value.split(' | ').join('\n');
+    return value;
+  }
   if (typeof value === 'object') {
     return Object.entries(value)
       .map(([k, v]) => `${k}:\n${formatCopy(v)}`)
