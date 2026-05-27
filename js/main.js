@@ -188,9 +188,9 @@ function renderOutput(parsed) {
 
   let delay = 0;
   state.types.forEach(type => {
-    const copy = parsed.copy?.[type];
-    if (!copy) return;
-    outputGrid.appendChild(createOutputCard(type, copy, delay));
+    const raw = parsed.copy?.[type];
+    if (!raw) return;
+    outputGrid.appendChild(createOutputCard(type, formatCopy(raw), delay));
     delay += 80;
   });
 
@@ -293,3 +293,16 @@ function triggerDownload(filename, content, type) {
 
 function cardId(type)  { return 'text-' + type.replace(/[^a-z0-9]/gi, '_'); }
 function escHtml(str)  { return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+// Safely convert any value the AI returns to a readable string.
+// Guards against nested objects showing up as [object Object].
+function formatCopy(value) {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object') {
+    return Object.entries(value)
+      .map(([k, v]) => `${k}:\n${formatCopy(v)}`)
+      .join('\n\n');
+  }
+  return String(value);
+}

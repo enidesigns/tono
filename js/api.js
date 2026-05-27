@@ -51,13 +51,14 @@ Generate copy for these UI states: ${types.join(', ')}.
 Rules:
 1. Every piece of copy must sound like it came from the SAME person with ONE consistent voice
 2. Match the tone strictly
-3. For button labels, provide 3-5 options each on its own line
-4. For modal copy, provide: Title: ..., Body: ..., Primary: ..., Secondary: ... (use these labels)
-5. For toast notifications, provide Success: ..., Error: ..., Info: ... (use these labels)
+3. For button labels: provide 3-5 options separated by newlines, all in ONE string value
+4. For modal copy: put Title, Body, Primary action, Secondary action all in ONE string value, each on its own line with the label
+5. For toast notifications: put Success, Error, and Info variants all in ONE string value, each on its own line with the label
+6. ALL values in the JSON must be plain strings — never nested objects or arrays
 
-Respond ONLY in valid JSON. No markdown, no backticks, no explanation.
+Respond ONLY in valid JSON. No markdown, no backticks, no explanation. Every value must be a flat string.
 {"tone":"${tone}","product":"${desc}","copy":{${types.map(t => `"${t}":""`).join(',')}}}
-Only include keys for the requested copy types. Fill in the actual copy values.`;
+Only include keys for the requested copy types. Fill in actual copy as plain string values.`;
 
     const data = await this.call(prompt, 1500);
     const text = data.choices[0].message.content.replace(/```json\s*|```/g, '').trim();
