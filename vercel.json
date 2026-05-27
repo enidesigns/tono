@@ -1,7 +1,7 @@
 {
   "version": 2,
   "routes": [
-    { "src": "/api/proxy", "dest": "/api/proxy.js" },
-    { "handle": "filesystem" }
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
