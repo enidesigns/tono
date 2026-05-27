@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tono — One voice. Every state.</title>
+  <meta name="description" content="Generate consistent, tone-matched UI microcopy across all states of your product.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">tono<span class="logo-dot">.</span></div>
+    <div class="tagline">One voice. Every state.</div>
+  </header>
+
+  <!-- ── Step 1 — Input ─────────────────────────────────────────────────── -->
+  <div class="step active" id="step1">
+
+    <!-- Product description -->
+    <div class="product-section">
+      <div class="section-label">Your product</div>
+      <div class="product-input-wrap">
+        <textarea
+          class="product-input"
+          id="productDesc"
+          placeholder="Describe your product briefly, e.g. 'A fintech app for freelancers' or 'A B2B SaaS for HR teams'"
+          maxlength="200"
+          rows="3"
+        ></textarea>
+        <div class="char-count"><span id="charCount">0</span>/200</div>
+      </div>
+    </div>
+
+    <!-- Narrow it down -->
+    <div class="narrow-section">
+      <button class="narrow-toggle" id="narrowToggle" type="button" aria-expanded="false">
+        <svg viewBox="0 0 10 10"><path d="M5 1v8M1 5h8"/></svg>
+        Add context
+      </button>
+      <div class="narrow-panel" id="narrowPanel" aria-hidden="true">
+        <div class="narrow-card">
+          <div class="narrow-field">
+            <label class="narrow-label" for="productArea">Product area</label>
+            <input class="narrow-input" id="productArea" type="text" placeholder="e.g. Backoffice, Consumer app, Supplier portal" autocomplete="off">
+          </div>
+          <div class="narrow-field">
+            <label class="narrow-label" for="screenOrFlow">Screen or flow</label>
+            <input class="narrow-input" id="screenOrFlow" type="text" placeholder="e.g. Checkout, Onboarding step 2, Commission settings" autocomplete="off">
+          </div>
+          <div class="narrow-field">
+            <label class="narrow-label" for="whoIsUser">Who's the user</label>
+            <input class="narrow-input" id="whoIsUser" type="text" placeholder="e.g. Internal ops team, First-time traveller, Supplier" autocomplete="off">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tone selection -->
+    <div class="tone-section">
+      <div class="section-label">Choose a tone</div>
+      <div class="tone-grid" id="toneGrid">
+
+        <div class="tone-card" data-tone="warm">
+          <span class="tone-badge badge-warm">warm</span>
+          <div class="tone-name">
+            <span class="tone-dot"></span>Warm
+          </div>
+          <div class="tone-sample">"Uh oh, your file didn't make it through. Give it another try?"</div>
+        </div>
+
+        <div class="tone-card" data-tone="professional">
+          <span class="tone-badge badge-professional">professional</span>
+          <div class="tone-name">
+            <span class="tone-dot"></span>Professional
+          </div>
+          <div class="tone-sample">"File upload failed. Please check the file and try again."</div>
+        </div>
+
+        <div class="tone-card" data-tone="direct">
+          <span class="tone-badge badge-direct">direct</span>
+          <div class="tone-name">
+            <span class="tone-dot"></span>Direct
+          </div>
+          <div class="tone-sample">"Upload failed. Retry."</div>
+        </div>
+
+        <div class="tone-card" data-tone="detailed">
+          <span class="tone-badge badge-detailed">detailed</span>
+          <div class="tone-name">
+            <span class="tone-dot"></span>Detailed
+          </div>
+          <div class="tone-sample">"Your file couldn't be uploaded; it may exceed the size limit or be an unsupported format. Check the file and try again."</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Copy type chips -->
+    <div class="copy-types-section">
+      <div class="section-label">What do you need copy for?</div>
+      <div class="select-all-row">
+        <button class="mini-btn" onclick="selectAll()">Select all</button>
+        <button class="mini-btn mini-btn-secondary" onclick="clearAll()">Clear all</button>
+      </div>
+      <div class="copy-types-grid">
+        <div class="copy-type-chip" data-type="Error messages">
+          <div class="chip-check"><svg viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2"/></svg></div>
+          Error messages
+        </div>
+        <div class="copy-type-chip" data-type="Warning messages">
+          <div class="chip-check"><svg viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2"/></svg></div>
+          Warning messages
+        </div>
+        <div class="copy-type-chip" data-type="Empty states">
+          <div class="chip-check"><svg viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2"/></svg></div>
+          Empty states
+        </div>
+        <div class="copy-type-chip" data-type="Success states">
+          <div class="chip-check"><svg viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2"/></svg></div>
+          Success states
+        </div>
+        <div class="copy-type-chip" data-type="Button labels">
+          <div class="chip-check"><svg viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2"/></svg></div>
+          Button labels
+        </div>
+        <div class="copy-type-chip" data-type="Modal copy">
+          <div class="chip-check"><svg viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2"/></svg></div>
+          Modal copy
+        </div>
+        <div class="copy-type-chip" data-type="Toast notifications">
+          <div class="chip-check"><svg viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2"/></svg></div>
+          Toast notifications
+        </div>
+        <div class="copy-type-chip" data-type="Onboarding tooltips">
+          <div class="chip-check"><svg viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2"/></svg></div>
+          Onboarding tooltips
+        </div>
+        <div class="copy-type-chip" data-type="404 / offline">
+          <div class="chip-check"><svg viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2"/></svg></div>
+          404 / offline
+        </div>
+      </div>
+      <p class="chips-empty-hint" id="chipsHint">Select at least one copy type to continue.</p>
+    </div>
+
+    <!-- Generate -->
+    <button class="generate-btn" id="generateBtn" onclick="generate()" disabled>
+      <svg viewBox="0 0 18 18">
+        <path d="M9 1v4M9 13v4M1 9h4M13 9h4M3.5 3.5l2.8 2.8M11.7 11.7l2.8 2.8M3.5 14.5l2.8-2.8M11.7 6.3l2.8-2.8"/>
+      </svg>
+      Generate copy
+    </button>
+    <p class="kbd-hint">
+      <span title="Command + Return on Mac">⌘ Return</span> to generate on Mac
+      <span class="kbd-sep">·</span>
+      <span title="Ctrl + Enter on Windows / Linux">Ctrl + Enter</span> on Windows
+    </p>
+
+  </div>
+
+  <!-- ── Step 2 — Loading ───────────────────────────────────────────────── -->
+  <div class="step" id="step2">
+    <div class="loading-wrap">
+      <div class="loading-orb">
+        <svg viewBox="0 0 30 30">
+          <path d="M15 3C8.4 3 3 8.4 3 15s5.4 12 12 12 12-5.4 12-12"/>
+          <path d="M15 9l4 4-4 4"/>
+        </svg>
+      </div>
+      <div class="loading-title">
+        Writing your copy<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+      </div>
+      <div class="loading-sub" id="loadingSub">Tuning the tone</div>
+    </div>
+  </div>
+
+  <!-- ── Step 3 — Output ───────────────────────────────────────────────── -->
+  <div class="step" id="step3">
+
+    <div class="output-header">
+      <div>
+        <div class="output-title">Your copy</div>
+        <div class="output-meta" id="outputMeta"></div>
+      </div>
+      <button class="back-btn" onclick="goBack()">← Start over</button>
+    </div>
+
+    <div class="error-card" id="errorCard"></div>
+
+    <div class="output-grid" id="outputGrid"></div>
+
+    <div class="export-bar" id="exportBar">
+      <span class="export-label">Export all</span>
+      <button class="export-btn" onclick="copyAll()">
+        <svg viewBox="0 0 14 14"><rect x="4" y="4" width="8" height="8" rx="1.5"/><path d="M2 10V3a1 1 0 011-1h7"/></svg>
+        Copy all
+      </button>
+      <button class="export-btn" onclick="downloadTxt()">
+        <svg viewBox="0 0 14 14"><path d="M7 1v9M4 7l3 3 3-3"/><path d="M1 12h12"/></svg>
+        .txt
+      </button>
+      <button class="export-btn export-btn-primary" onclick="downloadJson()">
+        <svg viewBox="0 0 14 14"><path d="M7 1v9M4 7l3 3 3-3"/><path d="M1 12h12"/></svg>
+        .json
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
