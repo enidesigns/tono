@@ -7,7 +7,7 @@ module.exports = async function handler(req, res) {
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: 'GROQ_API_KEY not configured on Vercel environment variables' });
+    return res.status(500).json({ error: 'GROQ_API_KEY not configured on server' });
   }
 
   try {
