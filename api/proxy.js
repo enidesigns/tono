@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const https = require('https');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -7,22 +7,47 @@ module.exports = async function handler(req, res) {
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: 'GROQ_API_KEY not configured on server' });
+    console.error('[tono] GROQ_API_KEY is not set');
+    return res.status(500).json({ error: 'GROQ_API_KEY is not set in Vercel environment variables' });
   }
 
-  try {
-    const upstream = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  const payload = JSON.stringify(req.body);
+  console.log('[tono] proxying to Groq, model:', req.body?.model);
+
+  return new Promise((resolve) => {
+    const options = {
+      hostname: 'api.groq.com',
+      path: '/openai/v1/chat/completions',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(req.body)
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    };
+
+    const proxyReq = https.request(options, (proxyRes) => {
+      let raw = '';
+      proxyRes.on('data', chunk => raw += chunk);
+      proxyRes.on('end', () => {
+        console.log('[tono] Groq responded with status', proxyRes.statusCode);
+        try {
+          const data = JSON.parse(raw);
+          res.status(proxyRes.statusCode).json(data);
+        } catch {
+          res.status(502).json({ error: 'Non-JSON response from Groq', raw: raw.slice(0, 200) });
+        }
+        resolve();
+      });
     });
 
-    const data = await upstream.json();
-    return res.status(upstream.status).json(data);
-  } catch (err) {
-    return res.status(502).json({ error: 'Proxy error', message: err.message });
-  }
+    proxyReq.on('error', (err) => {
+      console.error('[tono] proxy request error:', err.message);
+      res.status(502).json({ error: 'Proxy connection error', message: err.message });
+      resolve();
+    });
+
+    proxyReq.write(payload);
+    proxyReq.end();
+  });
 };
