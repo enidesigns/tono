@@ -382,7 +382,6 @@ function renderPreview(container, type, value) {
         <div class="pv-banner-body">
           <div class="pv-banner-title">${h(value.title || '')}</div>
           <div class="pv-banner-desc">${h(value.description || '')}</div>
-          ${value.action ? `<button class="pv-inline-btn pv-inline-${v}">${h(value.action)}</button>` : ''}
         </div>
       </div>`;
       break;

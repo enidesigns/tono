@@ -939,6 +939,7 @@ body {
 
 .pv-inline-btn {
   display: inline-flex;
+  align-self: flex-start;
   margin-top: 8px;
   padding: 6px 14px;
   border-radius: 8px;
@@ -949,6 +950,7 @@ body {
   border: 1.5px solid currentColor;
   background: transparent;
   cursor: default;
+  white-space: nowrap;
 }
 .pv-inline-error   { color: #EF4444; }
 .pv-inline-warning { color: #D97706; }
