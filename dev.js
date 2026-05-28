@@ -9,7 +9,7 @@ const http = require('http');
 const fs   = require('fs');
 const path = require('path');
 
-const PORT = 4321;
+const PORT = process.env.PORT || 4321;
 
 // ── Load .env.local ──────────────────────────────────────────────────────────
 try {

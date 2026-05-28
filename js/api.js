@@ -36,6 +36,21 @@ const API = {
     return parts.length ? ' ' + parts.join('. ') + '.' : '';
   },
 
+  getTypeSchema(type) {
+    const schemas = {
+      'Error messages':      '{"title":"","description":"","action":""}',
+      'Warning messages':    '{"title":"","description":"","action":""}',
+      'Empty states':        '{"illustration label":"","heading":"","subtext":"","cta":""}',
+      'Success states':      '{"heading":"","body":"","cta":""}',
+      'Button labels':       '{"primary":"","secondary":"","destructive":"","cancel":""}',
+      'Modal copy':          '{"title":"","body":"","primary action":"","secondary action":""}',
+      'Toast notifications': '{"success":{"message":""},"error":{"message":""},"info":{"message":""}}',
+      'Onboarding tooltips': '{"step1":{"heading":"","body":""},"step2":{"heading":"","body":""},"step3":{"heading":"","body":""}}',
+      '404 / offline':       '{"heading":"","subtext":"","cta":""}',
+    };
+    return schemas[type] || '""';
+  },
+
   parseJSON(text) {
     // Attempt 1: direct parse
     try { return JSON.parse(text); } catch (_) {}
@@ -61,6 +76,7 @@ const API = {
 
   async generateAll(desc, tone, types, context = {}) {
     const contextStr = this.buildContextStr(context);
+    const schemaLines = types.map(t => `"${t}": ${this.getTypeSchema(t)}`).join(',\n');
     const prompt = `You are a UI copywriter. Generate microcopy for a product described as: "${desc}".${contextStr}
 
 Tone: ${tone}
@@ -71,34 +87,25 @@ Tone: ${tone}
 
 Generate copy for these UI states: ${types.join(', ')}.
 
+Use EXACTLY these JSON schemas for each type — replace every "" with real copy:
+${schemaLines}
+
 Rules:
 1. Every piece of copy must sound like it came from the SAME person with ONE consistent voice
 2. Match the tone strictly
-3. For button labels: provide 3-5 options separated by " | " (pipe character), all in ONE string value
-4. For modal copy: put Title, Body, Primary action, Secondary action all in ONE string value, each separated by " | " with the label (e.g. "Title: ... | Body: ... | Primary: ... | Secondary: ...")
-5. For toast notifications: put Success, Error, and Info variants all in ONE string value, each separated by " | " (e.g. "Success: ... | Error: ... | Info: ...")
-6. ALL values in the JSON must be plain strings — never nested objects or arrays — no literal line breaks inside string values
+3. ALL leaf string values must be plain, single-line strings — no literal newlines, no extra nesting
 
-Respond ONLY in valid JSON. No markdown, no backticks, no explanation. Every value must be a flat string with no newlines inside it.
-{"tone":"${tone}","product":"${desc}","copy":{${types.map(t => `"${t}":""`).join(',')}}}
-Only include keys for the requested copy types. Fill in actual copy as plain string values.`;
+Respond ONLY in valid JSON with this exact wrapper. No markdown, no backticks, no explanation:
+{"tone":"${tone}","product":"${desc}","copy":{${types.map(t => `"${t}":${this.getTypeSchema(t)}`).join(',')}}}`;
 
-    const data = await this.call(prompt, 1500);
+    const data = await this.call(prompt, 2000);
     const text = data.choices[0].message.content.replace(/```json\s*|```/g, '').trim();
     return this.parseJSON(text);
   },
 
   async regenerateCard(type, desc, tone, context = {}) {
-    const specialInstructions = {
-      'Button labels': 'Provide 3-5 options, one per line.',
-      'Modal copy': 'Format as: Title: ..., Body: ..., Primary: ..., Secondary: ...',
-      'Toast notifications': 'Format as: Success: ..., Error: ..., Info: ...'
-    };
-    const extra = specialInstructions[type] ? ` ${specialInstructions[type]}` : '';
-    const contextStr = this.buildContextStr(context);
-    const prompt = `Write microcopy for "${type}" for this product: "${desc}".${contextStr} Tone: ${tone}. Be consistent with a ${tone} voice.${extra} Return ONLY the copy text, no extra labels or explanation.`;
-
-    const data = await this.call(prompt, 400);
-    return data.choices[0].message.content.trim();
+    // Re-use generateAll so we get the same structured schema and robust parsing
+    const parsed = await this.generateAll(desc, tone, [type], context);
+    return parsed.copy?.[type];
   }
 };
